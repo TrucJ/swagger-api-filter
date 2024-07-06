@@ -11,8 +11,12 @@ def filter_swagger(input_swagger, input_filter, output_file):
     with open(input_filter, 'r') as f:
         api_filter = json.load(f)
 
-    # Filter the necessary APIs
-    filtered_paths = {path: swagger['paths'][path] for path in api_filter['paths'] if path in swagger['paths']}
+    # Filter the necessary APIs and methods
+    filtered_paths = {}
+    for path, methods in api_filter['paths'].items():
+        if path in swagger['paths']:
+            filtered_paths[path] = {method: swagger['paths'][path][method] for method in methods if method in swagger['paths'][path]}
+
     filtered_definitions = {}
 
     # Filter the relevant objects
