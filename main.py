@@ -43,9 +43,9 @@ def filter_swagger(input_swagger, input_filter, output_file):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Filter Swagger APIs based on a specified filter list.")
-    parser.add_argument('input_swagger', type=str, help="Path to the input Swagger file.")
-    parser.add_argument('input_filter', type=str, help="Path to the filter file.")
-    parser.add_argument('output_file', type=str, help="Path to the output filtered Swagger file.")
+    parser.add_argument('-i', '--input_swagger', type=str, required=True, help="Path to the input Swagger file.")
+    parser.add_argument('-f', '--input_filter', type=str, required=True, help="Path to the filter file.")
+    parser.add_argument('-o', '--output_file', type=str, required=True, help="Path to the output filtered Swagger file.")
 
     args = parser.parse_args()
 
