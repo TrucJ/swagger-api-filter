@@ -5,6 +5,10 @@ import os
 
 app = Flask(__name__)
 
+@app.route('/ping', methods=['GET'])
+def ping():
+    return 'pong'
+
 def filter_swagger(input_data, filter_data):
     # Read the Swagger file
     swagger = json.loads(input_data)
