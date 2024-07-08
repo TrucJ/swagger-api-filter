@@ -13,7 +13,7 @@
 ## Requirements
 
 - Python 3.x
-- `argparse` module (usually included with Python standard library)
+- `Flask` library
 
 ## Usage
 
@@ -29,22 +29,41 @@ The filter file should be a JSON file with the following structure:
     }
 }
 ```
+
 In this example, the filter file specifies that only the `GET` method for `/items` and both `GET` and `POST` methods for `/items/{itemId}` should be retained in the filtered Swagger file
 
-### Running the Script
+### Use the API
 
-1. Clone the Repository (if you haven't already):
+You can use tools like `curl` to test the API.
+
+Using `curl`:
 
 ```bash
-git clone https://github.com/yourusername/swagger-api-filter.git
+curl -X POST -F 'swagger=@path/to/swagger.json' -F 'filter=@path/to/filter.json' https://swagger-api-filter.vercel.app/filter
+```
+
+Replace `path/to/swagger.json` and `path/to/filter.json` with the actual file paths.
+
+### Running locally
+
+1. **Clone the Repository**:
+
+```bash
+git clone https://github.com/TrucJ/swagger-api-filter.git
 cd swagger-api-filter
 ```
 
-2. Prepare your Swagger and Filter files:
+2. **Install Dependencies**:
+
+```bash
+pip install Flask
+```
+
+3. **Prepare your Swagger and Filter files**:
 
 Ensure you have your Swagger JSON file and filter JSON file prepared.
 
-3. Run the Script:
+4. **Run the Script**:
 
 Use the following command to run the script:
 
