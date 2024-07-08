@@ -1,56 +1,30 @@
-import json
-from copy import deepcopy
 import argparse
+from swagger_filter import filter_swagger
 
-def filter_swagger(input_swagger, input_filter, output_file):
-    # Read the Swagger file
-    with open(input_swagger, 'r') as f:
-        swagger = json.load(f)
+def main():
+    parser = argparse.ArgumentParser(description="Filter Swagger APIs based on a specified filter list.")
+    parser.add_argument('-i', '--input', type=str, required=True, help="Path to the input Swagger file.")
+    parser.add_argument('-f', '--filter', type=str, required=True, help="Path to the filter file.")
+    parser.add_argument('-o', '--output', type=str, required=True, help="Path to the output filtered Swagger file.")
 
-    # Read the filter file
-    with open(input_filter, 'r') as f:
-        api_filter = json.load(f)
+    args = parser.parse_args()
 
-    # Filter the necessary APIs and methods
-    filtered_paths = {}
-    for path, methods in api_filter['paths'].items():
-        if path in swagger['paths']:
-            filtered_paths[path] = {method: swagger['paths'][path][method] for method in methods if method in swagger['paths'][path]}
+    with open(args.input, 'r') as f:
+        input_data = f.read()
 
-    filtered_definitions = {}
+    with open(args.filter, 'r') as f:
+        filter_data = f.read()
 
-    # Filter the relevant objects
-    for path, path_item in filtered_paths.items():
-        for method, operation in path_item.items():
-            if 'parameters' in operation:
-                for parameter in operation['parameters']:
-                    if 'schema' in parameter and '$ref' in parameter['schema']:
-                        ref = parameter['schema']['$ref'].split('/')[-1]
-                        filtered_definitions[ref] = swagger['definitions'][ref]
+    try:
+        filtered_swagger = filter_swagger(input_data, filter_data)
+    except Exception as e:
+        print(f"Error: {e}")
+        return
 
-            if 'responses' in operation:
-                for response in operation['responses'].values():
-                    if 'schema' in response and '$ref' in response['schema']:
-                        ref = response['schema']['$ref'].split('/')[-1]
-                        filtered_definitions[ref] = swagger['definitions'][ref]
-
-    # Create a new Swagger file
-    filtered_swagger = deepcopy(swagger)
-    filtered_swagger['paths'] = filtered_paths
-    filtered_swagger['definitions'] = filtered_definitions
-
-    # Write to a new Swagger file
-    with open(output_file, 'w') as f:
-        json.dump(filtered_swagger, f, indent=2)
+    with open(args.output, 'w') as f:
+        f.write(filtered_swagger)
 
     print("Filtered and created new Swagger file successfully.")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Filter Swagger APIs based on a specified filter list.")
-    parser.add_argument('-i', '--input_swagger', type=str, required=True, help="Path to the input Swagger file.")
-    parser.add_argument('-f', '--input_filter', type=str, required=True, help="Path to the filter file.")
-    parser.add_argument('-o', '--output_file', type=str, required=True, help="Path to the output filtered Swagger file.")
-
-    args = parser.parse_args()
-
-    filter_swagger(args.input_swagger, args.input_filter, args.output_file)
+    main()
