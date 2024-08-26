@@ -15,30 +15,27 @@ def filter_swagger(input_data, filter_data):
             filtered_paths[path] = {method: swagger['paths'][path][method] for method in swagger['paths'][path] if method in methods}
 
     filtered_definitions = {}
-    
-    def ref(name):
-        obj_name = name.split('/')[-1]
-        obj = swagger['definitions'][obj_name]
-        filtered_definitions[obj_name] = obj
-        if 'properties' in obj:
-            for prop in obj['properties'].values():
-                if '$ref' in prop:
-                    ref(prop['$ref'])
-                if 'items' in prop and '$ref' in prop['items']:
-                    ref(prop['items']['$ref'])
+
+    # Function ref handle references
+    def ref(data):
+        if isinstance(data, dict):
+            for key in data:
+                if key == '$ref':
+                    obj_name = data[key].split('/')[-1]
+                    obj = swagger['definitions'][obj_name]
+                    filtered_definitions[obj_name] = obj
+                    # Call ref() to handle references
+                    ref(obj)
+                else:
+                    ref(data[key])
+        if isinstance(data, list):
+            for item in data:
+                ref(item)
 
     # Filter the relevant objects
     for path, path_item in filtered_paths.items():
-        for method, operation in path_item.items():
-            if 'parameters' in operation:
-                for parameter in operation['parameters']:
-                    if 'schema' in parameter and '$ref' in parameter['schema']:
-                        ref(parameter['schema']['$ref'])
-
-            if 'responses' in operation:
-                for response in operation['responses'].values():
-                    if 'schema' in response and '$ref' in response['schema']:
-                        ref(response['schema']['$ref'])
+        for data in path_item.values():
+            ref(data)
 
     # Create a new Swagger file
     filtered_swagger = deepcopy(swagger)
