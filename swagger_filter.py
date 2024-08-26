@@ -14,7 +14,7 @@ def filter_swagger(input_data, filter_data):
         if path in swagger['paths']:
             filtered_paths[path] = {method: swagger['paths'][path][method] for method in swagger['paths'][path] if method in methods}
 
-    filtered_definitions = {}
+    definitions = set()
 
     # Function ref handle references
     def ref(data):
@@ -22,10 +22,9 @@ def filter_swagger(input_data, filter_data):
             for key in data:
                 if key == '$ref':
                     obj_name = data[key].split('/')[-1]
-                    obj = swagger['definitions'][obj_name]
-                    filtered_definitions[obj_name] = obj
+                    definitions.add(obj_name)
                     # Call ref() to handle references
-                    ref(obj)
+                    ref(swagger['definitions'][obj_name])
                 else:
                     ref(data[key])
         if isinstance(data, list):
@@ -40,6 +39,6 @@ def filter_swagger(input_data, filter_data):
     # Create a new Swagger file
     filtered_swagger = deepcopy(swagger)
     filtered_swagger['paths'] = filtered_paths
-    filtered_swagger['definitions'] = filtered_definitions
+    filtered_swagger['definitions'] = {name: swagger['definitions'][name] for name in swagger['definitions'] if name in definitions}
 
     return json.dumps(filtered_swagger, indent=2)
