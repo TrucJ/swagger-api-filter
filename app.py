@@ -1,8 +1,12 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import json
 from swagger_filter import filter_swagger
 
 app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route('/ping', methods=['GET'])
 def ping():
