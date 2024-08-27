@@ -9,28 +9,184 @@
 <body>
     <div class="container mt-5">
         <h1 class="mb-4">Swagger API Filter</h1>
-        <form id="filter-form" method="POST" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label for="swagger" class="form-label">Swagger File</label>
-                <input class="form-control" type="file" id="swagger" name="swagger" required>
+        <div class="row">
+            <!-- Left side: Buttons -->
+            <div class="col-md-4">
+                <form id="filter-form" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="swagger" class="form-label">Swagger File</label>
+                        <input class="form-control" type="file" id="swagger" name="swagger" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="filter" class="form-label">Filter File</label>
+                        <input class="form-control" type="file" id="filter" name="filter" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 mb-3">Filter and Download</button>
+                    <button type="button" id="download-filter" class="btn btn-secondary w-100" disabled>Download Updated Filter</button>
+                </form>
             </div>
-            <div class="mb-3">
-                <label for="filter" class="form-label">Filter File</label>
-                <input class="form-control" type="file" id="filter" name="filter" required>
+
+            <!-- Right side: API Paths and Checkboxes -->
+            <div class="col-md-8">
+                <h2>API Paths and Methods</h2>
+                <form id="paths-form">
+                    <div id="paths-list" class="overflow-auto" style="max-height: 400px;"></div>
+                </form>
             </div>
-            <button type="submit" class="btn btn-primary">Filter and Download</button>
-        </form>
+        </div>
     </div>
 
     <script>
+        let filterData = null;
+        let swaggerFile = null;
+        let originalSwaggerFileName = '';
+
+        document.getElementById('filter').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+                try {
+                    filterData = JSON.parse(event.target.result);
+                } catch (error) {
+                    alert('Invalid Filter JSON format');
+                    return;
+                }
+
+                if (filterData.paths) {
+                    autoCheckPaths(filterData.paths);
+                } else {
+                    alert('No paths found in the Filter file.');
+                }
+                document.getElementById('download-filter').disabled = false;
+            };
+
+            if (file) {
+                reader.readAsText(file);
+            }
+        });
+
+        document.getElementById('swagger').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+                const swaggerContent = event.target.result;
+                let swaggerJson;
+
+                try {
+                    swaggerJson = JSON.parse(swaggerContent);
+                } catch (error) {
+                    alert('Invalid Swagger JSON format');
+                    return;
+                }
+
+                swaggerFile = file;
+                originalSwaggerFileName = file.name;
+                const paths = swaggerJson.paths || {};
+                const pathsListElement = document.getElementById('paths-list');
+                pathsListElement.innerHTML = ''; // Clear previous content
+
+                for (const path in paths) {
+                    if (paths.hasOwnProperty(path)) {
+                        const methods = paths[path];
+                        for (const method in methods) {
+                            if (methods.hasOwnProperty(method)) {
+                                const pathItem = document.createElement('div');
+                                pathItem.className = "form-check";
+
+                                const checkbox = document.createElement('input');
+                                checkbox.type = 'checkbox';
+                                checkbox.className = 'form-check-input';
+                                checkbox.id = `${method}-${path}`;
+                                checkbox.name = 'api-paths';
+                                checkbox.value = `${method.toUpperCase()} ${path}`;
+
+                                const label = document.createElement('label');
+                                label.className = 'form-check-label';
+                                label.htmlFor = checkbox.id;
+                                label.innerHTML = `<strong>${method.toUpperCase()}</strong> ${path}`;
+
+                                checkbox.addEventListener('change', updateFilterData);
+
+                                pathItem.appendChild(checkbox);
+                                pathItem.appendChild(label);
+                                pathsListElement.appendChild(pathItem);
+                            }
+                        }
+                    }
+                }
+
+                if (!pathsListElement.innerHTML) {
+                    pathsListElement.innerHTML = '<p>No paths found in the Swagger file.</p>';
+                }
+
+                if (filterData && filterData.paths) {
+                    autoCheckPaths(filterData.paths);
+                }
+            };
+
+            if (file) {
+                reader.readAsText(file);
+            }
+        });
+
+        function autoCheckPaths(filterPaths) {
+            for (const path in filterPaths) {
+                if (filterPaths.hasOwnProperty(path)) {
+                    const methods = filterPaths[path];
+                    for (const method of methods) {
+                        const checkboxId = `${method}-${path}`;
+                        const checkbox = document.getElementById(checkboxId);
+                        if (checkbox) {
+                            checkbox.checked = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        function updateFilterData() {
+            if (filterData) {
+                const checkboxes = document.querySelectorAll('#paths-list input[type="checkbox"]');
+                const updatedPaths = {};
+
+                checkboxes.forEach(checkbox => {
+                    const [method, ...pathParts] = checkbox.value.split(' ');
+                    const path = pathParts.join(' ');
+                    
+                    if (checkbox.checked) {
+                        if (!updatedPaths[path]) {
+                            updatedPaths[path] = [];
+                        }
+                        updatedPaths[path].push(method.toLowerCase());
+                    } else {
+                        if (updatedPaths[path]) {
+                            updatedPaths[path] = updatedPaths[path].filter(m => m !== method.toLowerCase());
+                            if (updatedPaths[path].length === 0) {
+                                delete updatedPaths[path];
+                            }
+                        }
+                    }
+                });
+
+                filterData.paths = updatedPaths;
+            }
+        }
+
         document.getElementById('filter-form').addEventListener('submit', async function(e) {
             e.preventDefault(); // Prevent the form from submitting the traditional way
 
-            const swaggerFile = document.getElementById('swagger').files[0];
-            const filterFile = document.getElementById('filter').files[0];
+            if (!swaggerFile) {
+                alert('Please upload a Swagger file.');
+                return;
+            }
+
+            updateFilterData(); // Update filter data with current checkbox states
+
             const formData = new FormData();
             formData.append('swagger', swaggerFile);
-            formData.append('filter', filterFile);
+            formData.append('filter', new Blob([JSON.stringify(filterData, null, 2)], { type: 'application/json' }));
 
             try {
                 const response = await fetch('/filter/beauty', {
@@ -42,13 +198,9 @@
                     const blob = await response.blob();
                     const url = window.URL.createObjectURL(blob);
 
-                    // Split the original Swagger file name by the period ('.')
+                    // Simplified: Append "_filter" to the first part of the file name
                     const swaggerFileNameParts = swaggerFile.name.split('.');
-
-                    // Insert "_filter" after the first part of the file name
                     swaggerFileNameParts[0] += '_filter';
-
-                    // Join the parts back together with the period
                     const downloadFileName = swaggerFileNameParts.join('.');
 
                     const a = document.createElement('a');
@@ -64,6 +216,21 @@
             } catch (error) {
                 console.error('Error:', error);
                 alert('An error occurred while processing your request.');
+            }
+        });
+
+        document.getElementById('download-filter').addEventListener('click', function() {
+            if (filterData) {
+                const blob = new Blob([JSON.stringify(filterData, null, 2)], { type: 'application/json' });
+                const url = window.URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'updated_filter.json';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
             }
         });
     </script>
