@@ -1,0 +1,15 @@
+.form-row {
+    display: flex;
+    align-items: center;
+}
+
+.form-row .form-control {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.form-row .btn {
+    margin-top: 0;
+    height: calc(2.5rem + 2px); /* Adjust button height to match input height */
+    line-height: 1.5; /* Center text vertically */
+}
