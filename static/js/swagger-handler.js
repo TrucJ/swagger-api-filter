@@ -60,6 +60,9 @@ export function handleSwaggerFileChange(event) {
         if (appState.filterData && appState.filterData.paths) {
             autoCheckPaths(appState.filterData.paths);
         }
+
+        // Enable the filter file input once Swagger file is chosen
+        document.getElementById('filter').disabled = false;
     };
 
     if (file) {
