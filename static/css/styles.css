@@ -48,10 +48,6 @@ body {
     border-color: #0056b3;
 }
 
-.btn-outline-secondary {
-    height: 38px; /* Match input height */
-}
-
 .input-group .form-control {
     border-right: none;
 }
@@ -63,4 +59,38 @@ body {
 input[type="file"] {
     height: 38px;
     line-height: 1.5;
+    border: 2px solid #007bff; /* Blue border color */
+    background-color: #e9f7ff; /* Light blue background */
+    color: #0056b3; /* Dark blue text */
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+input[type="file"]:hover {
+    border-color: #0056b3; /* Darker blue border on hover */
+    background-color: #d0efff; /* Slightly darker blue background on hover */
+}
+
+input[type="file"]:disabled {
+    background-color: #f0f0f0; /* Light gray background for disabled input */
+    border-color: #cccccc; /* Gray border for disabled input */
+    color: #666666; /* Gray text for disabled input */
+}
+
+.form-check {
+    border-radius: 5px;
+    margin-bottom: 10px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+}
+
+/* Styling the label and checkbox */
+.form-check-label {
+    flex: 1;
+}
+
+.form-check-input {
+    margin-right: 10px;
 }

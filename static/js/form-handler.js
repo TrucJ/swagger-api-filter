@@ -2,6 +2,17 @@
 
 import { appState } from './scripts.js';
 
+export const methodColorMap = {
+    GET: '#61affe',       // Blue for GET
+    POST: '#49cc90',      // Green for POST
+    PUT: '#fca130',       // Orange for PUT
+    DELETE: '#f93e3e',    // Red for DELETE
+    PATCH: '#50e3c2',     // Turquoise for PATCH
+    HEAD: '#9012fe',      // Purple for HEAD
+    OPTIONS: '#0d5aa7',   // Dark Blue for OPTIONS
+    TRACE: '#c3e2ff'      // Light Blue for TRACE
+};
+
 export function handleFilterFormSubmit(event) {
     event.preventDefault();
     const swaggerFileInput = document.getElementById('swagger');
@@ -50,16 +61,23 @@ export function updateFilterData(event) {
     const method = items[0];
     const path = items.slice(1).join('-');
     const isChecked = event.target.checked;
+    const pathItem = document.getElementById(event.target.id).parentElement;
 
     if (!appState.filterData.paths[path]) {
         appState.filterData.paths[path] = [];
     }
 
     if (isChecked) {
+        pathItem.style.color = '#ffffff';
+        pathItem.style.backgroundColor = methodColorMap[method.toUpperCase()];
+
         if (!appState.filterData.paths[path].includes(method)) {
             appState.filterData.paths[path].push(method);
         }
     } else {
+        pathItem.style.color = methodColorMap[method.toUpperCase()];
+        pathItem.style.backgroundColor = '#ffffff';
+
         const index = appState.filterData.paths[path].indexOf(method);
         if (index > -1) {
             appState.filterData.paths[path].splice(index, 1);
@@ -69,7 +87,6 @@ export function updateFilterData(event) {
             delete appState.filterData.paths[path];
         }
     }
-    console.log("Filter:",appState.filterData);
 }
 
 function generateOutputFileName(originalFileName) {

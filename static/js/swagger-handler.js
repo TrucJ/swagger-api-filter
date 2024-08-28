@@ -1,12 +1,12 @@
 // /static/js/swagger-handler.js
 
 import { appState } from './scripts.js';
-import { updateFilterData } from './form-handler.js';
+import { updateFilterData, methodColorMap } from './form-handler.js';
 import { autoCheckPaths } from './filter-handler.js';
 
 export function handleSwaggerFileChange(event) {
     const file = event.target.files[0];
-    const reader = new FileReader();
+    const reader = new FileReader(); 
 
     reader.onload = function(event) {
         const swaggerContent = event.target.result;
@@ -29,7 +29,11 @@ export function handleSwaggerFileChange(event) {
                 for (const method in methods) {
                     if (methods.hasOwnProperty(method)) {
                         const pathItem = document.createElement('div');
-                        pathItem.className = "form-check";
+                        pathItem.className = `form-check`;
+                        pathItem.style.borderStyle = 'solid';
+                        pathItem.style.borderWidth = '2px';
+                        pathItem.style.borderColor = methodColorMap[method.toUpperCase()];
+                        pathItem.style.color = methodColorMap[method.toUpperCase()];
 
                         const checkbox = document.createElement('input');
                         checkbox.type = 'checkbox';
@@ -37,6 +41,7 @@ export function handleSwaggerFileChange(event) {
                         checkbox.id = `${method}-${path}`;
                         checkbox.name = 'api-paths';
                         checkbox.value = `${method.toUpperCase()} ${path}`;
+                        checkbox.hidden = true;
 
                         const label = document.createElement('label');
                         label.className = 'form-check-label';
