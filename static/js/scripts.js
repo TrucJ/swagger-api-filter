@@ -6,7 +6,7 @@ import { handleFilterFormSubmit, handleDownloadFilter } from './form-handler.js'
 
 export const appState = {
     swaggerFile: null,
-    filterData: null,
+    filterData: {"paths": {}},
 };
 
 document.getElementById('filter').addEventListener('change', handleFilterFileChange);

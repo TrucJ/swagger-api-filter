@@ -2,6 +2,7 @@
 
 import { appState } from './scripts.js';
 import { updateFilterData } from './form-handler.js';
+import { autoCheckPaths } from './filter-handler.js';
 
 export function handleSwaggerFileChange(event) {
     const file = event.target.files[0];

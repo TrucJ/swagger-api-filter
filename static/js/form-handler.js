@@ -20,7 +20,7 @@ export function handleFilterFormSubmit(event) {
     formData.append('swagger', swaggerFileInput.files[0]);
 
     const filterBlob = new Blob([JSON.stringify(appState.filterData, null, 2)], { type: 'application/json' });
-    formData.append('filter', filterBlob, 'updated_filter.json');
+    formData.append('filter', filterBlob, 'filter.json');
 
     fetch('/filter/beauty', {
         method: 'POST',
@@ -41,12 +41,14 @@ export function handleDownloadFilter(event) {
     }
 
     const filterJson = JSON.stringify(appState.filterData, null, 2);
-    const filterFileName = 'updated_filter.json';
+    const filterFileName = 'filter.json';
     downloadFile(filterJson, filterFileName);
 }
 
 export function updateFilterData(event) {
-    const [method, path] = event.target.id.split('-');
+    const items = event.target.id.split('-');
+    const method = items[0];
+    const path = items.slice(1).join('-');
     const isChecked = event.target.checked;
 
     if (!appState.filterData.paths[path]) {
@@ -67,6 +69,7 @@ export function updateFilterData(event) {
             delete appState.filterData.paths[path];
         }
     }
+    console.log("Filter:",appState.filterData);
 }
 
 function generateOutputFileName(originalFileName) {

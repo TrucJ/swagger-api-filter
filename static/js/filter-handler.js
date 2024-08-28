@@ -19,7 +19,6 @@ export function handleFilterFileChange(event) {
         } else {
             alert('No paths found in the Filter file.');
         }
-        document.getElementById('download-filter').disabled = false;
     };
 
     if (file) {
