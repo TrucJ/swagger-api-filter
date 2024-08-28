@@ -1,6 +1,6 @@
 // /static/js/form-handler.js
 
-import { appState } from './global.js';
+import { appState, methodColorMap } from './global.js';
 
 export function handleFilterFormSubmit(event) {
     event.preventDefault();
