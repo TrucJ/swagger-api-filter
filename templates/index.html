@@ -7,34 +7,41 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/css/styles.css" rel="stylesheet">
 </head>
-<body>
-    <div class="container mt-5">
-        <h1 class="mb-4">Swagger API Filter</h1>
-        <div class="row">
-            <!-- Left side: Buttons -->
-            <div class="col-md-6">
-                <form id="filter-form" method="POST" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label for="swagger" class="form-label">Swagger File</label>
-                        <input class="form-control" type="file" id="swagger" name="swagger" required>
-                    </div>
-                    <div class="flex-grow-1">
-                        <label for="filter" class="form-label">Filter File</label>
-                        <div class="form-row mb-3">
-                            <input class="form-control" type="file" id="filter" name="filter" disabled>
-                            <button type="button" id="download-filter" class="btn btn-secondary">Download</button>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100 mb-3">Filter and Download</button>
-                </form>
+<body class="d-flex flex-column min-vh-100">
+    <div class="container mt-5 my-auto d-flex flex-column flex-grow-1">
+        <div class="card shadow-sm flex-grow-1">
+            <div class="card-header bg-primary text-white">
+                <h1 class="mb-0">Swagger API Filter</h1>
             </div>
+            <div class="card-body d-flex flex-column flex-grow-1">
+                <div class="row flex-grow-1">
+                    <!-- Left side: Buttons -->
+                    <div class="col-md-6 mb-4">
+                        <form id="filter-form" method="POST" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="swagger" class="form-label">Swagger File</label>
+                                <input class="form-control" type="file" id="swagger" name="swagger" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="filter" class="form-label">Filter File</label>
+                                <div class="input-group">
+                                    <input class="form-control" type="file" id="filter" name="filter" disabled>
+                                    <button type="button" id="download-filter" class="btn btn-outline-secondary">Download</button>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Filter and Download</button>
+                        </form>
+                    </div>
 
-            <!-- Right side: API Paths and Checkboxes -->
-            <div class="col-md-6">
-                <h2>API Paths and Methods</h2>
-                <form id="paths-form">
-                    <div id="paths-list" class="overflow-auto" style="max-height: 400px;"></div>
-                </form>
+                    <!-- Right side: API Paths and Checkboxes -->
+                    <div class="col-md-6 d-flex flex-column">
+                        <form id="paths-form" class="flex-grow-1">
+                            <div id="paths-list" class="overflow-auto border rounded p-3 flex-grow-1">
+                                <p class="text-muted">No Swagger file selected.</p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
