@@ -1,8 +1,7 @@
 // /static/js/swagger-handler.js
 
-import { appState } from './scripts.js';
-import { updateFilterData, methodColorMap } from './form-handler.js';
-import { autoCheckPaths } from './filter-handler.js';
+import { changeStatusFilterData } from './form-handler.js';
+import { methodColorMap } from './global.js';
 
 export function handleSwaggerFileChange(event) {
     const file = event.target.files[0];
@@ -30,28 +29,15 @@ export function handleSwaggerFileChange(event) {
                     if (methods.hasOwnProperty(method)) {
                         const pathItem = document.createElement('div');
                         pathItem.className = `form-check`;
+                        pathItem.id = `${method}-${path}`;
                         pathItem.style.borderStyle = 'solid';
                         pathItem.style.borderWidth = '2px';
                         pathItem.style.borderColor = methodColorMap[method.toUpperCase()];
                         pathItem.style.color = methodColorMap[method.toUpperCase()];
+                        pathItem.textContent = `${method.toUpperCase()} ${path}`;
 
-                        const checkbox = document.createElement('input');
-                        checkbox.type = 'checkbox';
-                        checkbox.className = 'form-check-input';
-                        checkbox.id = `${method}-${path}`;
-                        checkbox.name = 'api-paths';
-                        checkbox.value = `${method.toUpperCase()} ${path}`;
-                        checkbox.hidden = true;
+                        pathItem.addEventListener('click', event => changeStatusFilterData(event.target.id));
 
-                        const label = document.createElement('label');
-                        label.className = 'form-check-label';
-                        label.htmlFor = checkbox.id;
-                        label.innerHTML = `<strong>${method.toUpperCase()}</strong> ${path}`;
-
-                        checkbox.addEventListener('change', updateFilterData);
-
-                        pathItem.appendChild(checkbox);
-                        pathItem.appendChild(label);
                         pathsListElement.appendChild(pathItem);
                     }
                 }
@@ -60,10 +46,6 @@ export function handleSwaggerFileChange(event) {
 
         if (!pathsListElement.innerHTML) {
             pathsListElement.innerHTML = '<p>No paths found in the Swagger file.</p>';
-        }
-
-        if (appState.filterData && appState.filterData.paths) {
-            autoCheckPaths(appState.filterData.paths);
         }
 
         // Enable the filter file input once Swagger file is chosen

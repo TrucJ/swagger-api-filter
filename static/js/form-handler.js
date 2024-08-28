@@ -1,17 +1,6 @@
 // /static/js/form-handler.js
 
-import { appState } from './scripts.js';
-
-export const methodColorMap = {
-    GET: '#61affe',       // Blue for GET
-    POST: '#49cc90',      // Green for POST
-    PUT: '#fca130',       // Orange for PUT
-    DELETE: '#f93e3e',    // Red for DELETE
-    PATCH: '#50e3c2',     // Turquoise for PATCH
-    HEAD: '#9012fe',      // Purple for HEAD
-    OPTIONS: '#0d5aa7',   // Dark Blue for OPTIONS
-    TRACE: '#c3e2ff'      // Light Blue for TRACE
-};
+import { appState } from './global.js';
 
 export function handleFilterFormSubmit(event) {
     event.preventDefault();
@@ -56,25 +45,14 @@ export function handleDownloadFilter(event) {
     downloadFile(filterJson, filterFileName);
 }
 
-export function updateFilterData(event) {
-    const items = event.target.id.split('-');
+export function changeStatusFilterData(id) {
+    const items = id.split('-');
     const method = items[0];
     const path = items.slice(1).join('-');
-    const isChecked = event.target.checked;
-    const pathItem = document.getElementById(event.target.id).parentElement;
 
-    if (!appState.filterData.paths[path]) {
-        appState.filterData.paths[path] = [];
-    }
+    const pathItem = document.getElementById(id);
 
-    if (isChecked) {
-        pathItem.style.color = '#ffffff';
-        pathItem.style.backgroundColor = methodColorMap[method.toUpperCase()];
-
-        if (!appState.filterData.paths[path].includes(method)) {
-            appState.filterData.paths[path].push(method);
-        }
-    } else {
+    if (getStatusFilterData(id)) {
         pathItem.style.color = methodColorMap[method.toUpperCase()];
         pathItem.style.backgroundColor = '#ffffff';
 
@@ -86,7 +64,30 @@ export function updateFilterData(event) {
         if (appState.filterData.paths[path].length === 0) {
             delete appState.filterData.paths[path];
         }
+    } else {
+        pathItem.style.color = '#ffffff';
+        pathItem.style.backgroundColor = methodColorMap[method.toUpperCase()];
+
+        if (!appState.filterData.paths[path]) {
+            appState.filterData.paths[path] = [];
+        }
+
+        if (!appState.filterData.paths[path].includes(method)) {
+            appState.filterData.paths[path].push(method);
+        }
     }
+}
+
+export function getStatusFilterData(id) {
+    const items = id.split('-');
+    const method = items[0];
+    const path = items.slice(1).join('-');
+
+    if (!appState.filterData.paths[path]) {
+        return false;
+    }
+
+    return appState.filterData.paths[path].includes(method);
 }
 
 function generateOutputFileName(originalFileName) {
