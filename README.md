@@ -1,8 +1,8 @@
-# Swagger API Filter
+# Swagger Filter
 
 ## Introduction
 
-`Swagger API Filter` is a Python script designed to filter specific APIs and methods from a Swagger file based on a provided filter file. The filtered Swagger file will only contain the specified APIs and methods, making it easier to work with large Swagger files by narrowing down the scope to what you actually need.
+`Swagger Filter` is a Python script designed to filter specific APIs and methods from a Swagger file based on a provided filter file. The filtered Swagger file will only contain the specified APIs and methods, making it easier to work with large Swagger files by narrowing down the scope to what you actually need.
 
 ## Features
 
@@ -39,7 +39,7 @@ You can use tools like `curl` to test the API.
 Using `curl`:
 
 ```bash
-curl -X POST -F 'swagger=@path/to/swagger.json' -F 'filter=@path/to/filter.json' https://swagger-api-filter.vercel.app/filter
+curl -X POST -F 'swagger=@path/to/swagger.json' -F 'filter=@path/to/filter.json' https://swagger-filter.vercel.app/filter
 ```
 
 Replace `path/to/swagger.json` and `path/to/filter.json` with the actual file paths.
@@ -49,8 +49,8 @@ Replace `path/to/swagger.json` and `path/to/filter.json` with the actual file pa
 1. **Clone the Repository**:
 
 ```bash
-git clone https://github.com/TrucJ/swagger-api-filter.git
-cd swagger-api-filter
+git clone https://github.com/TrucJ/swagger-filter.git
+cd swagger-filter
 ```
 
 2. **Install Dependencies**:
